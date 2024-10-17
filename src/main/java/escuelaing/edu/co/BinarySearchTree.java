@@ -1,218 +1,428 @@
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+package escuelaing.edu.co;
 
-class TreeNode {
-    int value;
-    TreeNode left, right;
+import java.util.*;
 
-    public TreeNode(int value) {
-        this.value = value;
-        left = null;
-        right = null;
-    }
-}
+public class BinarySearchTree<T extends Comparable<T>> implements Collection<T> {
+    private Node<T> root;
+    private int size;
 
-public class BinarySearchTree {
-    private TreeNode root;
+    public static class Node<T> {
+        private T value;
+        private Node<T> left, right;
+        private int height;
 
-    public void insert(int value) {
-        root = insertRec(root, value);
-    }
-
-    private TreeNode insertRec(TreeNode root, int value) {
-        if (root == null) {
-            root = new TreeNode(value);
-            return root;
+        Node(T value) {
+            this.value = value;
+            this.height = 1;
         }
-        if (value < root.value) {
-            root.left = insertRec(root.left, value);
-        } else if (value > root.value) {
-            root.right = insertRec(root.right, value);
+
+        public T getValue() {
+            return value;
         }
-        return root;
-    }
 
-    public TreeNode search(int value) {
-        return searchRec(root, value);
-    }
-
-    private TreeNode searchRec(TreeNode root, int value) {
-        if (root == null || root.value == value) {
-            return root;
+        public Node<T> getLeft() {
+            return left;
         }
-        return value < root.value ? searchRec(root.left, value) : searchRec(root.right, value);
-    }
 
-    public void delete(int value) {
-        root = deleteRec(root, value);
-    }
-
-    private TreeNode deleteRec(TreeNode root, int value) {
-        if (root == null) {
-            return root;
+        public Node<T> getRight() {
+            return right;
         }
-        if (value < root.value) {
-            root.left = deleteRec(root.left, value);
-        } else if (value > root.value) {
-            root.right = deleteRec(root.right, value);
+
+        public int getHeight() {
+            return height;
+        }
+    }
+
+    @Override
+    public boolean add(T value) {
+        if (value == null) {
+            throw new NullPointerException("Value cannot be null");
+        }
+        int initialSize = size;
+        root = insert(root, value);
+        return size > initialSize;
+    }
+
+    private Node insert(Node node, T value) {
+        if (node == null) {
+            size++;
+            return new Node(value);
+        }
+
+        int compareResult = value.compareTo((T) node.value);
+        if (compareResult < 0) {
+            node.left = insert(node.left, value);
+        } else if (compareResult > 0) {
+            node.right = insert(node.right, value);
+        }
+
+        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+        return node;
+    }
+
+    public T search(T value) {
+        Node result = searchNode(root, value);
+        return result != null ? (T) result.value : null;
+    }
+
+    private Node searchNode(Node node, T value) {
+        if (node == null || value.compareTo((T) node.value) == 0) {
+            return node;
+        }
+        return value.compareTo((T) node.value) < 0
+                ? searchNode(node.left, value)
+                : searchNode(node.right, value);
+    }
+
+    @Override
+    public boolean remove(Object obj) {
+        if (!(obj instanceof Comparable)) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        T value = (T) obj;
+        int initialSize = size;
+        root = delete(root, value);
+        return size < initialSize;
+    }
+
+    private Node delete(Node node, T value) {
+        if (node == null) {
+            return null;
+        }
+
+        int compareResult = value.compareTo((T) node.value);
+        if (compareResult < 0) {
+            node.left = delete(node.left, value);
+        } else if (compareResult > 0) {
+            node.right = delete(node.right, value);
         } else {
-            if (root.left == null) {
-                return root.right;
-            } else if (root.right == null) {
-                return root.left;
+            if (node.left == null) {
+                size--;
+                return node.right;
+            } else if (node.right == null) {
+                size--;
+                return node.left;
             }
-            root.value = findMin(root.right).value;
-            root.right = deleteRec(root.right, root.value);
+
+            Node successor = findMin(node.right);
+            node.value = successor.value;
+            node.right = delete(node.right, (T) successor.value);
         }
-        return root;
+
+        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+        return node;
     }
 
-    public TreeNode findMin(TreeNode root) {
-        while (root.left != null) {
-            root = root.left;
-        }
-        return root;
+    public void inOrderTraversal(List<T> result) {
+        inOrderTraversal(root, result);
     }
 
-    public TreeNode findMax(TreeNode root) {
-        while (root.right != null) {
-            root = root.right;
+    private void inOrderTraversal(Node node, List<T> result) {
+        if (node != null) {
+            inOrderTraversal(node.left, result);
+            result.add((T) node.value);
+            inOrderTraversal(node.right, result);
         }
-        return root;
+    }
+
+    public void preOrderTraversal(List<T> result) {
+        preOrderTraversal(root, result);
+    }
+
+    private void preOrderTraversal(Node node, List<T> result) {
+        if (node != null) {
+            result.add((T) node.value);
+            preOrderTraversal(node.left, result);
+            preOrderTraversal(node.right, result);
+        }
+    }
+
+    public T getRoot() {
+        return root != null ? root.getValue() : null;
+    }
+
+
+    public void postOrderTraversal(List<T> result) {
+        postOrderTraversal(root, result);
+    }
+
+    private void postOrderTraversal(Node node, List<T> result) {
+        if (node != null) {
+            postOrderTraversal(node.left, result);
+            postOrderTraversal(node.right, result);
+            result.add((T) node.value);
+        }
+    }
+
+    public T findMin() {
+        if (root == null) return null;
+        return (T) findMin(root).value;
+    }
+
+    private Node findMin(Node node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
+
+    public T findMax() {
+        if (root == null) return null;
+        return (T) findMax(root).value;
+    }
+
+    private Node findMax(Node node) {
+        while (node.right != null) {
+            node = node.right;
+        }
+        return node;
     }
 
     public int height() {
-        return heightRec(root);
+        return getHeight(root);
     }
 
-    private int heightRec(TreeNode node) {
-        if (node == null) {
-            return -1;
-        }
-        return 1 + Math.max(heightRec(node.left), heightRec(node.right));
+    private int getHeight(Node node) {
+        return node == null ? 0 : node.height;
     }
 
     public boolean isBalanced() {
-        return isBalancedRec(root) != -1;
+        return isBalanced(root);
     }
 
-    private int isBalancedRec(TreeNode node) {
+    private boolean isBalanced(Node node) {
         if (node == null) {
-            return 0;
+            return true;
         }
-        int leftHeight = isBalancedRec(node.left);
-        int rightHeight = isBalancedRec(node.right);
-        if (leftHeight == -1 || rightHeight == -1 || Math.abs(leftHeight - rightHeight) > 1) {
-            return -1;
+
+        int balanceFactor = Math.abs(getHeight(node.left) - getHeight(node.right));
+        return balanceFactor <= 1 && isBalanced(node.left) && isBalanced(node.right);
+    }
+
+    public List<T> levelOrderTraversal() {
+        List<T> result = new ArrayList<>();
+        if (root == null) {
+            return result;
         }
-        return 1 + Math.max(leftHeight, rightHeight);
-    }
 
-    public void inOrderTraversal() {
-        inOrderRec(root);
-    }
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
 
-    private void inOrderRec(TreeNode node) {
-        if (node != null) {
-            inOrderRec(node.left);
-            System.out.print(node.value + " ");
-            inOrderRec(node.right);
-        }
-    }
-
-    public void preOrderTraversal() {
-        preOrderRec(root);
-    }
-
-    private void preOrderRec(TreeNode node) {
-        if (node != null) {
-            System.out.print(node.value + " ");
-            preOrderRec(node.left);
-            preOrderRec(node.right);
-        }
-    }
-
-    public void postOrderTraversal() {
-        postOrderRec(root);
-    }
-
-    private void postOrderRec(TreeNode node) {
-        if (node != null) {
-            postOrderRec(node.left);
-            postOrderRec(node.right);
-            System.out.print(node.value + " ");
-        }
-    }
-
-    public void levelOrderTraversal() {
-        if (root == null) return;
-
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.add(root);
         while (!queue.isEmpty()) {
-            TreeNode node = queue.poll();
-            System.out.print(node.value + " ");
-            if (node.left != null) queue.add(node.left);
-            if (node.right != null) queue.add(node.right);
+            Node current = queue.poll();
+            result.add((T) current.value);
+
+            if (current.left != null) {
+                queue.offer(current.left);
+            }
+            if (current.right != null) {
+                queue.offer(current.right);
+            }
         }
+
+        return result;
     }
 
-    public int countNodes() {
-        return countNodesRec(root);
-    }
-
-    private int countNodesRec(TreeNode node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + countNodesRec(node.left) + countNodesRec(node.right);
-    }
-
+    @Override
     public void clear() {
         root = null;
+        size = 0;
     }
 
-    public static void main(String[] args) {
-        BinarySearchTree bst = new BinarySearchTree();
-        bst.insert(51);
-        bst.insert(31);
-        bst.insert(21);
-        bst.insert(41);
-        bst.insert(76);
-        bst.insert(61);
-        bst.insert(85);
-
-        System.out.println("In-order Traversal:");
-        bst.inOrderTraversal();
-
-        System.out.println("\nPre-order Traversal:");
-        bst.preOrderTraversal();
-
-        System.out.println("\nPost-order Traversal:");
-        bst.postOrderTraversal();
-
-        System.out.println("\nLevel-order Traversal:");
-        bst.levelOrderTraversal();
-
-        System.out.println("\nSearch for 41: " + (bst.search(41) != null));
-        System.out.println("Height of the tree: " + bst.height());
-        System.out.println("Count of nodes: " + bst.countNodes());
-
-        bst.delete(21);
-        System.out.println("In-order Traversal after deleting 21:");
-        bst.inOrderTraversal();
-
-        bst.delete(31);
-        System.out.println("\nIn-order Traversal after deleting 31:");
-        bst.inOrderTraversal();
-
-        bst.delete(51);
-        System.out.println("\nIn-order Traversal after deleting 51:");
-        bst.inOrderTraversal();
-
-        System.out.println("\nIs the tree balanced? " + bst.isBalanced());
-        bst.clear();
-        System.out.println("Tree cleared. Count of nodes after clear: " + bst.countNodes());
+    @Override
+    public int size() {
+        return size;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        if (!(o instanceof Comparable)) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        T value = (T) o;
+        return search(value) != null;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private final List<T> elements = new ArrayList<>();
+            private int index = 0;
+
+            {
+                inOrderTraversal(elements);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return index < elements.size();
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return elements.get(index++);
+            }
+        };
+    }
+
+    @Override
+    public Object[] toArray() {
+        List<T> list = new ArrayList<>();
+        inOrderTraversal(list);
+        return list.toArray();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <E> E[] toArray(E[] a) {
+        List<T> list = new ArrayList<>();
+        inOrderTraversal(list);
+        return list.toArray(a);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        for (Object element : c) {
+            if (!contains(element)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        boolean modified = false;
+        for (T element : c) {
+            if (add(element)) {
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean modified = false;
+        for (Object element : c) {
+            if (remove(element)) {
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        List<T> toRemove = new ArrayList<>();
+        for (T element : this) {
+            if (!c.contains(element)) {
+                toRemove.add(element);
+            }
+        }
+        return removeAll(toRemove);
+    }
+
+    // Añade estos métodos a tu clase BinarySearchTree
+    public void printTreePyramid() {
+        if (root == null) {
+            System.out.println("Árbol vacío");
+            return;
+        }
+        int maxLevel = height();
+        System.out.println("\nÁrbol BST (Vista Pirámide):");
+        printNodeInternal(Collections.singletonList(root), 1, maxLevel);
+    }
+
+    private void printNodeInternal(List<Node> nodes, int level, int maxLevel) {
+        if (nodes.isEmpty() || isAllElementsNull(nodes)) return;
+
+        int floor = maxLevel - level;
+        int endgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
+        int firstSpaces = (int) Math.pow(2, (floor)) - 1;
+        int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
+
+        printWhitespaces(firstSpaces);
+
+        List<Node> newNodes = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node != null) {
+                System.out.print(node.value);
+                newNodes.add(node.left);
+                newNodes.add(node.right);
+            } else {
+                newNodes.add(null);
+                newNodes.add(null);
+                System.out.print(" ");
+            }
+            printWhitespaces(betweenSpaces);
+        }
+        System.out.println();
+
+        for (int i = 1; i <= endgeLines; i++) {
+            for (Node node : nodes) {
+                printWhitespaces(firstSpaces - i);
+                if (node == null) {
+                    printWhitespaces(endgeLines + endgeLines + i + 1);
+                    continue;
+                }
+
+                if (node.left != null) {
+                    System.out.print("/");
+                } else {
+                    printWhitespaces(1);
+                }
+
+                printWhitespaces(i + i - 1);
+
+                if (node.right != null) {
+                    System.out.print("\\");
+                } else {
+                    printWhitespaces(1);
+                }
+
+                printWhitespaces(endgeLines + endgeLines - i);
+            }
+            System.out.println();
+        }
+
+        printNodeInternal(newNodes, level + 1, maxLevel);
+    }
+
+    private void printWhitespaces(int count) {
+        for (int i = 0; i < count; i++) {
+            System.out.print(" ");
+        }
+    }
+
+    private boolean isAllElementsNull(List<Node> list) {
+        for (Node node : list) {
+            if (node != null) return false;
+        }
+        return true;
+    }
+
+    public int getNumberOfNodes() {
+        return getNumberOfNodes(root);
+    }
+
+    private int getNumberOfNodes(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + getNumberOfNodes(node.left) + getNumberOfNodes(node.right);
+    }
+
+
+
 }

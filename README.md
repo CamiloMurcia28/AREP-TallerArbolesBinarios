@@ -1,4 +1,4 @@
-# AREP-LAB06
+# AREP- Binary Tree Search Workshop
 LAB 06 - AREP
 
 # Security Application Design
@@ -32,10 +32,14 @@ You need to have installed Git and Java 17 to be able to execute the proyect
 
   Purpose: Adds a new node to the tree while maintaining the binary tree properties. 
   Details: This function takes a value as input and places the new node in the correct position based on its value compared to other nodes, ensuring that it follows the binary tree rules (for binary search trees, the left child is less than the parent, and the right child is greater). 
+
+![img_1.png](img_1.png)
 2. Search (search) 
 
   Purpose: Finds and returns a node containing a specific value. 
   Details: This function traverses the tree, comparing the target value with each node’s value. If it finds the value, it returns the node; otherwise, it returns null or indicates that the value is not present in the tree. 
+
+  ![img_2.png](img_2.png)
 
 3. Deletion (delete) 
 
@@ -46,6 +50,8 @@ You need to have installed Git and Java 17 to be able to execute the proyect
   The node has two children. 
   In the third case, the function typically finds the in-order successor (the smallest node in the right subtree) or the in-order predecessor (the largest node in the left subtree) to replace the deleted node. 
 
+![img_3.png](img_3.png)
+
 4. Traversal Methods 
 
   Purpose: These functions are used to visit all the nodes in the tree in a specific order. 
@@ -54,35 +60,56 @@ You need to have installed Git and Java 17 to be able to execute the proyect
   Pre-order Traversal (preOrderTraversal): Visits the root first, followed by the left subtree and then the right subtree (root, left, right). This is useful for creating a copy of the tree. 
   Post-order Traversal (postOrderTraversal): Visits the left and right subtrees before the root (left, right, root). This is helpful for deleting or freeing nodes. 
 
+  ![img_4.png](img_4.png)
+
 5. Find Minimum (findMin) 
 
   Purpose: Finds and returns the node with the smallest value in the tree. 
   Details: In a binary search tree, this is the leftmost node. 
+
+  ![img_5.png](img_5.png)
+
   6. Find Maximum (findMax) 
 
   Purpose: Finds and returns the node with the largest value in the tree. 
   Details: In a binary search tree, this is the rightmost node. 
+
+  ![img_6.png](img_6.png)
+
 7. Height (height) 
 
   Purpose: Calculates and returns the height (or depth) of the tree, which is the number of edges from the root to the deepest leaf. 
   Details: This function helps determine the balance and efficiency of operations on the tree. 
   
+  ![img_7.png](img_7.png)
+
 8. Check if the Tree is Balanced (isBalanced) 
 
   Purpose: Determines if the tree is balanced, meaning the heights of the two child subtrees of any node differ by no more than one. 
   Details: A balanced tree ensures better performance for insertion, deletion, and search operations. 
+
+  ![img_8.png](img_8.png)
+
 9. Level-Order Traversal (levelOrderTraversal) 
 
   Purpose: Visits all nodes at each level of the tree, starting from the root, then level 1, level 2, and so on. 
   Details: This traversal is often implemented using a queue and is used for breadth-first search (BFS) operations. 
+
+  ![img_9.png](img_9.png)
+
 10. Clear (clear) 
 
   Purpose: Removes all nodes from the tree, making it empty. 
   Details: This function is useful for resetting or clearing the tree’s contents. 
+
+  ![img_10.png](img_10.png)
+
 11. Count Nodes (countNodes) 
 
   Purpose: Returns the number of nodes currently present in the tree. 
   Details: Useful for determining the size of the tree and for validating the correctness of operations. 
+
+  ![img_11.png](img_11.png)
 
 ## Deployment Instructions
 
@@ -93,26 +120,18 @@ To install and run this application locally, follow these steps:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/CamiloMurcia28/AREP-LAB06.git
-cd AREP-LAB06
+git clone https://github.com/CamiloMurcia28/AREP-TallerArbolesBinarios.git
+cd AREP-TallerArbolesBinarios
 ```
 
 2. Run
    
 ## Tests
 
-![image](https://github.com/user-attachments/assets/aa9c4998-e806-4100-9a1f-03305e26e591)
+![img.png](img.png)
 
 ## Built With
-    * Spring Boot - The backend framework
-    * React - The frontend library
-    * H2 Database Engine - Database
-    * HTML - Markup Language
-    * CSS - Style sheet language
-    * JavaScript - Programming language and core technology of the Web
-    * The Apache HTTP Server Project - Web Server
-    * Maven - Dependency Management
-    * npm - Package Manager for JavaScript
+    * Java - High-level, class-based, object-oriented programming language
 
 ## Versioning
 
